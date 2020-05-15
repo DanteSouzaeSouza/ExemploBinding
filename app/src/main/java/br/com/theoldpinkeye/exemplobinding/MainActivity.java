@@ -28,7 +28,8 @@ public class MainActivity extends AppCompatActivity {
   private OnClickListener corkyListener = (v) -> {
 
     // criando uma mensagem de log com os dados das Views
-    Log.e("Dados","Nome: " + edtName.getText() + " Senha: " + edtPassword.getText() + " Confirmação: " + edtConfirmPassword.getText() + " Aceite: " + chkAccept.isChecked());
+    Log.e("Dados","Nome: " + edtName.getText() + " Senha: " + edtPassword.getText() +
+        " Confirmação: " + edtConfirmPassword.getText() + " Aceite: " + chkAccept.isChecked());
 
     // criando um objeto temporário para receber os valores dos campos do form
     UserInfo user = new UserInfo(edtName.getText().toString(),
