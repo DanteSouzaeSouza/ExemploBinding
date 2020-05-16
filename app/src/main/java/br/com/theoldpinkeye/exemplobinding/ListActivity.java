@@ -33,5 +33,7 @@ public class ListActivity extends AppCompatActivity {
     // passando os dados da lista que vieram no Extra para uma List
     users = intent.getParcelableArrayListExtra("Lista");
 
+    // TODO: Atrelar listview ao adapter!
+
   }
 }

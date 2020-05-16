@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
     edtEmail.setText("");
 
     // atribuindo o foco do formulário ao edtName
-    edtName.isFocused();
+    edtName.requestFocus();
 
     // imprime no Logcat todos os registros da List
     // Lê-se: para cada UserInfo em users, faça

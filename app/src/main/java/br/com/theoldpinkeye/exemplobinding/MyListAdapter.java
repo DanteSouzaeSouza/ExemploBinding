@@ -20,6 +20,9 @@ public class MyListAdapter extends BaseAdapter {
   // Variável que recebe os itens da lista
   private List<UserInfo> users;
 
+  // TODO: Falta Constructor dessa classe!
+
+
 
   // implementando os métodos
   @Override
