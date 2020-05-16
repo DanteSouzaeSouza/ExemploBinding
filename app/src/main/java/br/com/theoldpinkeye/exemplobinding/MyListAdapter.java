@@ -53,7 +53,7 @@ public class MyListAdapter extends BaseAdapter {
 
     nameTextView.setText(users.get(position).getName());
     emailTextView.setText(users.get(position).getEmail());
-    acceptCheck.isChecked(users.get(position).isAccept());
+    acceptCheck.setChecked(users.get(position).isAccept());
 
     return card;
   }
