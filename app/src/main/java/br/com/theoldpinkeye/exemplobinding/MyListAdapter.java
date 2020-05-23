@@ -20,9 +20,11 @@ public class MyListAdapter extends BaseAdapter {
   // Variável que recebe os itens da lista
   private List<UserInfo> users;
 
-  // TODO: Falta Constructor dessa classe!
-
-
+  // Constructor dessa classe
+  public MyListAdapter(Context context, List<UserInfo> users) {
+    this.context = context;
+    this.users = users;
+  }
 
   // implementando os métodos
   @Override
@@ -50,14 +52,17 @@ public class MyListAdapter extends BaseAdapter {
     @SuppressLint("ViewHolder") View card = LayoutInflater.from(context)
         .inflate(R.layout.users_list_item, parent, false);
 
+    // fazendo o Binding dos elementos do card ao java
     TextView nameTextView = card.findViewById(R.id.nameTextView);
     TextView emailTextView = card.findViewById(R.id.emailTextView);
     CheckBox acceptCheck = card.findViewById(R.id.acceptCheckBox);
 
+    // Adicionando os dados da lista ao card de acordo com a position
     nameTextView.setText(users.get(position).getName());
     emailTextView.setText(users.get(position).getEmail());
     acceptCheck.setChecked(users.get(position).isAccept());
 
+    // retornando para o ListView o card pronto com os dados
     return card;
   }
 }
