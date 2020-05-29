@@ -1,6 +1,8 @@
 package br.com.theoldpinkeye.exemplobinding;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
@@ -11,7 +13,10 @@ import android.widget.EditText;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import br.com.theoldpinkeye.exemplobinding.models.UserInfo;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import java.io.BufferedReader;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -114,5 +119,74 @@ public class MainActivity extends AppCompatActivity {
 
     // Instanciando a List como ArrayList para funcionalidades adicionais
     users = new ArrayList<>();
+
+    if(restorePrefs(this.getPreferences(Context.MODE_PRIVATE)) != null){
+      users = deserializeJson(restorePrefs(this.getPreferences(Context.MODE_PRIVATE)));
+    }
+
   }
+
+  // método que serializa o ArrayList para JSON
+  private String serializeList(List<UserInfo> users){
+    // 1º passo - Criar e instanciar um objeto Gson
+    Gson gson = new Gson();
+    // convertendo nossa lista para json e retornando essa string
+    Log.e("Json gerado", gson.toJson(users));
+
+    return gson.toJson(users);
+  }
+
+  // método que deserializa o Json
+  private List<UserInfo> deserializeJson(String json){
+    // 1º passo - Criar e instanciar um objeto Gson
+    Gson gson = new Gson();
+    // definindo qual tipo de objeto o Gson deve se basear para deserializar os dados
+    Type userListType = new TypeToken<ArrayList<UserInfo>>(){}.getType();
+    // convertendo nosso json em List<UserInfo> e retornando essa List
+
+    Log.e("Json deserializado", gson.fromJson(json, userListType).toString());
+
+    // convertendo nosso json em List<UserInfo> e retornando essa List
+    return gson.fromJson(json, userListType);
+  }
+
+  public void saveSharedPrefs(String jsonSave){
+    // criando uma variável para receber as preferências atuais do App
+    SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+    // Editando as preferências pra colocar os dados a serem salvos
+    SharedPreferences.Editor editor = sharedPref.edit();
+    // colocando uma String dentro do SharedPreferences
+    editor.putString("users", jsonSave);
+    // validando a inserção dos valores
+    editor.apply();
+  }
+
+  public String restorePrefs(SharedPreferences data){
+    return data.getString("users", null);
+  }
+
+  @Override
+  protected void onPause() {
+    super.onPause();
+
+    // mandando salvar SharedPreferences
+    saveSharedPrefs(serializeList(users));
+  }
+
+  @Override
+  protected void onResume() {
+    super.onResume();
+
+    restorePrefs(this.getPreferences(Context.MODE_PRIVATE));
+  }
+
+  @Override
+  public void onBackPressed() {
+    super.onBackPressed();
+
+    // mandando salvar SharedPreferences
+    saveSharedPrefs(serializeList(users));
+  }
+
+
 }

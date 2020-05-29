@@ -39,9 +39,6 @@ public class ListActivity extends AppCompatActivity {
         Log.d("Funcionou até aqui?", "SIM!");
       }
     }
-    // TODO: Implementar a criação da lista pelos dados obtidos do JSON
-    // TODO: Será que devemos fazer a rotina de salvamento e leitura na outra Activity?
-    // TODO: Poderíamos substituir o uso do Intent pelo uso do JSON??
 
 
 
@@ -66,11 +63,6 @@ public class ListActivity extends AppCompatActivity {
     listView = findViewById(R.id.usersListView);
     // fazendo o Listview e o adapter se comunicarem
     listView.setAdapter(adapter);
-
-
-
-
-
 
   }
 
@@ -169,6 +161,8 @@ public class ListActivity extends AppCompatActivity {
   @Override
   public void onBackPressed() {
     createFile(getApplicationContext(), FILENAME, serializeList(users));
+    finish();
+    onNavigateUpFromChild(this);
   }
 
 
