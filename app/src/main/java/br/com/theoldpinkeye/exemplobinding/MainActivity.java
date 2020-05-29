@@ -3,6 +3,7 @@ package br.com.theoldpinkeye.exemplobinding;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
@@ -11,11 +12,9 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
 import br.com.theoldpinkeye.exemplobinding.models.UserInfo;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import java.io.BufferedReader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,9 +30,45 @@ public class MainActivity extends AppCompatActivity {
   Button btnConfirm;
   List<UserInfo> users;
   Button btnList;
+  // criando uma implementação própria do OnClickListener
+  // esse é um método reaproveitável
+  private OnClickListener meuClickListener = (v) -> {
+
+    // criando uma mensagem de log com os dados das Views
+    Log.e("Dados", "Nome: " + edtName.getText() + " Senha: " + edtPassword.getText() +
+        " Confirmação: " + edtConfirmPassword.getText() + " Aceite: " + chkAccept.isChecked());
+
+    // criando um objeto temporário para receber os valores dos campos do form
+    UserInfo user = new UserInfo(edtName.getText().toString(),
+        edtPassword.getText().toString(),
+        edtConfirmPassword.getText().toString(),
+        edtEmail.getText().toString(),
+        chkAccept.isChecked());
+
+    // adicionando os valores recebidos à lista de usuários
+    users.add(user);
+
+    // limpando o formulário para um novo cadastro
+    edtName.setText("");
+    edtPassword.setText("");
+    edtConfirmPassword.setText("");
+    chkAccept.setChecked(false);
+    edtEmail.setText("");
+
+    // atribuindo o foco do formulário ao edtName
+    edtName.requestFocus();
+
+    // imprime no Logcat todos os registros da List
+    // Lê-se: para cada UserInfo em users, faça
+    for (UserInfo u : users) {
+      Log.d("Usuario", u.toString());
+    }
+
+
+  };
 
   // Criando novo método para chamar a Lista de cadastrados
-  public void chamaListActivity(View view){
+  public void chamaListActivity(View view) {
 
     // testando funcionamento do botão
     Log.i("Mensagem", "Eu funciono!");
@@ -56,46 +91,6 @@ public class MainActivity extends AppCompatActivity {
     startActivity(intent);
   }
 
-
-
-
-  // criando uma implementação própria do OnClickListener
-  // esse é um método reaproveitável
-  private OnClickListener meuClickListener = (v) -> {
-
-    // criando uma mensagem de log com os dados das Views
-    Log.e("Dados","Nome: " + edtName.getText() + " Senha: " + edtPassword.getText() +
-        " Confirmação: " + edtConfirmPassword.getText() + " Aceite: " + chkAccept.isChecked());
-
-    // criando um objeto temporário para receber os valores dos campos do form
-    UserInfo user = new UserInfo(edtName.getText().toString(),
-                                edtPassword.getText().toString(),
-                                edtConfirmPassword.getText().toString(),
-                                edtEmail.getText().toString(),
-                                chkAccept.isChecked());
-
-    // adicionando os valores recebidos à lista de usuários
-    users.add(user);
-
-    // limpando o formulário para um novo cadastro
-    edtName.setText("");
-    edtPassword.setText("");
-    edtConfirmPassword.setText("");
-    chkAccept.setChecked(false);
-    edtEmail.setText("");
-
-    // atribuindo o foco do formulário ao edtName
-    edtName.requestFocus();
-
-    // imprime no Logcat todos os registros da List
-    // Lê-se: para cada UserInfo em users, faça
-    for (UserInfo u: users){
-      Log.d("Usuario",u.toString());
-    }
-
-
-  };
-
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -111,7 +106,6 @@ public class MainActivity extends AppCompatActivity {
     btnConfirm = findViewById(R.id.buttonConfirm);
     btnList = findViewById(R.id.verListaButton);
 
-
     // como adicionar o evento click num botão android java
 
     // Adicionando o onClickListener criado acima ao botão
@@ -120,37 +114,36 @@ public class MainActivity extends AppCompatActivity {
     // Instanciando a List como ArrayList para funcionalidades adicionais
     users = new ArrayList<>();
 
-    if(restorePrefs(this.getPreferences(Context.MODE_PRIVATE)) != null){
+    // Checar se há dentro das SharedPreferences a string desejada
+    if (restorePrefs(this.getPreferences(Context.MODE_PRIVATE)) != null) {
+      // atribuindo o resultado da deserialização do json contido nas SharePreferences à lista de users
       users = deserializeJson(restorePrefs(this.getPreferences(Context.MODE_PRIVATE)));
     }
-
   }
 
   // método que serializa o ArrayList para JSON
-  private String serializeList(List<UserInfo> users){
+  private String serializeList(List<UserInfo> users) {
     // 1º passo - Criar e instanciar um objeto Gson
     Gson gson = new Gson();
     // convertendo nossa lista para json e retornando essa string
     Log.e("Json gerado", gson.toJson(users));
-
     return gson.toJson(users);
   }
 
   // método que deserializa o Json
-  private List<UserInfo> deserializeJson(String json){
+  private List<UserInfo> deserializeJson(String json) {
     // 1º passo - Criar e instanciar um objeto Gson
     Gson gson = new Gson();
     // definindo qual tipo de objeto o Gson deve se basear para deserializar os dados
-    Type userListType = new TypeToken<ArrayList<UserInfo>>(){}.getType();
+    Type userListType = new TypeToken<ArrayList<UserInfo>>() {}.getType();
     // convertendo nosso json em List<UserInfo> e retornando essa List
-
     Log.e("Json deserializado", gson.fromJson(json, userListType).toString());
-
     // convertendo nosso json em List<UserInfo> e retornando essa List
     return gson.fromJson(json, userListType);
   }
 
-  public void saveSharedPrefs(String jsonSave){
+  // Criando um método que salvará o json dentro das SharedPreferences
+  public void saveSharedPrefs(String jsonSave) {
     // criando uma variável para receber as preferências atuais do App
     SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
     // Editando as preferências pra colocar os dados a serem salvos
@@ -161,14 +154,22 @@ public class MainActivity extends AppCompatActivity {
     editor.apply();
   }
 
-  public String restorePrefs(SharedPreferences data){
+  // Criando um método que restuarará a informação que está dentro das SharedPreferences
+  public String restorePrefs(SharedPreferences data) {
+    // lê as SharedPreferences e busca a string desejada
     return data.getString("users", null);
   }
 
   @Override
   protected void onPause() {
     super.onPause();
+    // mandando salvar SharedPreferences
+    saveSharedPrefs(serializeList(users));
+  }
 
+  @Override
+  protected void onStop() {
+    super.onStop();
     // mandando salvar SharedPreferences
     saveSharedPrefs(serializeList(users));
   }
@@ -176,17 +177,15 @@ public class MainActivity extends AppCompatActivity {
   @Override
   protected void onResume() {
     super.onResume();
-
+    // mandando restaurar a informação ao "acordar" o aplicativo
     restorePrefs(this.getPreferences(Context.MODE_PRIVATE));
   }
 
   @Override
   public void onBackPressed() {
     super.onBackPressed();
-
     // mandando salvar SharedPreferences
     saveSharedPrefs(serializeList(users));
   }
-
 
 }
